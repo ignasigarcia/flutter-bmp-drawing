@@ -27,7 +27,7 @@ class _DrawState extends State<DrawDirect4> {
     super.initState();
     pixels = Int32List(widget.width * widget.height);
     shades = Int32List(widget.width * widget.height);
-    color = Color.fromRGBO(0, 0, 0, 0.7).value;
+    color = Color.fromRGBO(0, 0, 0, 1).value;
   }
 
   Future<ui.Image> makeImage() {
@@ -49,63 +49,63 @@ class _DrawState extends State<DrawDirect4> {
     return c.future;
   }
 
-  plotLineWidth3(x0, y0, x1, y1, th, screenWidth, Int32List nextPixels) {
-    /* plot an anti-aliased line of width th pixel */
-    var dx = (x1 - x0).abs(), sx = x0 < x1 ? 1 : -1;
-    var dy = (y1 - y0).abs(), sy = y0 < y1 ? 1 : -1;
-    var err, e2 = sqrt(dx * dx + dy * dy); /* length */
-
-    // if (th <= 1 || e2 == 0) return plotLineAA(x0,y0, x1,y1);         /* assert */
-    dx *= 255 / e2;
-    dy *= 255 / e2;
-    th = 255 * (th - 1); /* scale values */
-
-    if (dx < dy) {
-      /* steep line */
-      x1 = ((e2 + th / 2) / dy).round(); /* start offset */
-      err = x1 * dy - th / 2; /* shift error value to offset width */
-      for (x0 -= x1 * sx;; y0 += sy) {
-        nextPixels[y0 * screenWidth + (x1 = x0)] = color;
-        // setPixelAA(x1 = x0, y0, err);                  /* aliasing pre-pixel */
-        for (e2 = dy - err - th; e2 + dy < 255; e2 += dy) {
-          nextPixels[y0 * screenWidth + (x1 += sx)] = color;
-          // setPixel(x1 += sx, y0);                      /* pixel on the line */
-        }
-        nextPixels[y0 * screenWidth + (x1 + sx)] = color;
-        // setPixelAA(x1+sx, y0, e2);                    /* aliasing post-pixel */
-        if (y0 == y1) break;
-        err += dx; /* y-step */
-        if (err > 255) {
-          err -= dy;
-          x0 += sx;
-        } /* x-step */
-      }
-    } else {
-      /* flat line */
-      y1 = ((e2 + th / 2) / dx).round(); /* start offset */
-      err = y1 * dx - th / 2; /* shift error value to offset width */
-      for (y0 -= y1 * sy;; x0 += sx) {
-        nextPixels[(y1 = y0) * screenWidth + x0] = color;
-        // setPixelAA(x0, y1 = y0, err); /* aliasing pre-pixel */
-        for (e2 = dx - err - th; e2 + dx < 255; e2 += dx) {
-          nextPixels[(y1 += sy) * screenWidth + x0] = color;
-          // setPixel(x0, y1 += sy); /* pixel on the line */
-        }
-        nextPixels[(y1 + sy) * screenWidth + x0] = color;
-        // setPixelAA(x0, y1 + sy, e2); /* aliasing post-pixel */
-        if (x0 == x1) break;
-        err += dy; /* x-step */
-        if (err > 255) {
-          err -= dx;
-          y0 += sy;
-        } /* y-step */
-      }
-    }
-
-    setState(() {
-      pixels = nextPixels;
-    });
-  }
+  // plotLineWidth3(x0, y0, x1, y1, th, screenWidth, Int32List nextPixels) {
+  //   /* plot an anti-aliased line of width th pixel */
+  //   var dx = (x1 - x0).abs(), sx = x0 < x1 ? 1 : -1;
+  //   var dy = (y1 - y0).abs(), sy = y0 < y1 ? 1 : -1;
+  //   var err, e2 = sqrt(dx * dx + dy * dy); /* length */
+  //
+  //   // if (th <= 1 || e2 == 0) return plotLineAA(x0,y0, x1,y1);         /* assert */
+  //   dx *= 255 / e2;
+  //   dy *= 255 / e2;
+  //   th = 255 * (th - 1); /* scale values */
+  //
+  //   if (dx < dy) {
+  //     /* steep line */
+  //     x1 = ((e2 + th / 2) / dy).round(); /* start offset */
+  //     err = x1 * dy - th / 2; /* shift error value to offset width */
+  //     for (x0 -= x1 * sx;; y0 += sy) {
+  //       nextPixels[y0 * screenWidth + (x1 = x0)] = color;
+  //       // setPixelAA(x1 = x0, y0, err);                  /* aliasing pre-pixel */
+  //       for (e2 = dy - err - th; e2 + dy < 255; e2 += dy) {
+  //         nextPixels[y0 * screenWidth + (x1 += sx)] = color;
+  //         // setPixel(x1 += sx, y0);                      /* pixel on the line */
+  //       }
+  //       nextPixels[y0 * screenWidth + (x1 + sx)] = color;
+  //       // setPixelAA(x1+sx, y0, e2);                    /* aliasing post-pixel */
+  //       if (y0 == y1) break;
+  //       err += dx; /* y-step */
+  //       if (err > 255) {
+  //         err -= dy;
+  //         x0 += sx;
+  //       } /* x-step */
+  //     }
+  //   } else {
+  //     /* flat line */
+  //     y1 = ((e2 + th / 2) / dx).round(); /* start offset */
+  //     err = y1 * dx - th / 2; /* shift error value to offset width */
+  //     for (y0 -= y1 * sy;; x0 += sx) {
+  //       nextPixels[(y1 = y0) * screenWidth + x0] = color;
+  //       // setPixelAA(x0, y1 = y0, err); /* aliasing pre-pixel */
+  //       for (e2 = dx - err - th; e2 + dx < 255; e2 += dx) {
+  //         nextPixels[(y1 += sy) * screenWidth + x0] = color;
+  //         // setPixel(x0, y1 += sy); /* pixel on the line */
+  //       }
+  //       nextPixels[(y1 + sy) * screenWidth + x0] = color;
+  //       // setPixelAA(x0, y1 + sy, e2); /* aliasing post-pixel */
+  //       if (x0 == x1) break;
+  //       err += dy; /* x-step */
+  //       if (err > 255) {
+  //         err -= dx;
+  //         y0 += sy;
+  //       } /* y-step */
+  //     }
+  //   }
+  //
+  //   setState(() {
+  //     pixels = nextPixels;
+  //   });
+  // }
 
   setPixel(x, y) {
     pixels[y * widget.width + x] = color;
@@ -129,8 +129,8 @@ class _DrawState extends State<DrawDirect4> {
   }
 
   setPixelAA(x, y, s) {
-    print(s.round());
-    pixels[y * widget.width + x] = Color.fromRGBO(0, 0, 0, s / 255).value;
+    int color = s.toInt();
+    pixels[y * widget.width + x] = Color.fromRGBO(color, color, color, 1).value;
   }
 
   plotLineAA(x0, y0, x1, y1) {
@@ -209,6 +209,54 @@ class _DrawState extends State<DrawDirect4> {
     });
   }
 
+  plotLineWidth(x0, y0, x1, y1, th) {
+    /* plot an anti-aliased line of width th pixel */
+    var dx = (x1 - x0).abs(), sx = x0 < x1 ? 1 : -1;
+    var dy = (y1 - y0).abs(), sy = y0 < y1 ? 1 : -1;
+    var err, e2 = sqrt(dx * dx + dy * dy); /* length */
+
+    if (th <= 1 || e2 == 0) return plotLineAA(x0, y0, x1, y1); /* assert */
+    dx *= 255 / e2;
+    dy *= 255 / e2;
+    th = 255 * (th - 1); /* scale values */
+
+    if (dx < dy) {
+      /* steep line */
+      x1 = ((e2 + th / 2) / dy).round(); /* start offset */
+      err = x1 * dy - th / 1.5; /* shift error value to offset width */
+      for (x0 -= x1 * sx;; y0 += sy) {
+        setPixelAA(x1 = x0, y0, err); /* aliasing pre-pixel */
+        for (e2 = dy - err - th; e2 + dy < 255; e2 += dy) setPixel(x1 += sx, y0); /* pixel on the line */
+        setPixelAA(x1 + sx, y0, e2); /* aliasing post-pixel */
+        if (y0 == y1) break;
+        err += dx; /* y-step */
+        if (err > 255) {
+          err -= dy;
+          x0 += sx;
+        } /* x-step */
+      }
+    } else {
+      /* flat line */
+      y1 = ((e2 + th / 2) / dx).round(); /* start offset */
+      err = y1 * dx - th / 1.5; /* shift error value to offset width */
+      for (y0 -= y1 * sy;; x0 += sx) {
+        setPixelAA(x0, y1 = y0, err); /* aliasing pre-pixel */
+        for (e2 = dx - err - th; e2 + dx < 255; e2 += dx) setPixel(x0, y1 += sy); /* pixel on the line */
+        setPixelAA(x0, y1 + sy, e2); /* aliasing post-pixel */
+        if (x0 == x1) break;
+        err += dy; /* x-step */
+        if (err > 255) {
+          err -= dx;
+          y0 += sy;
+        } /* y-step */
+      }
+    }
+
+    setState(() {
+      pixels = pixels;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var rng = new Random();
@@ -218,7 +266,7 @@ class _DrawState extends State<DrawDirect4> {
           color: Colors.white,
           child: Stack(
             children: [
-              // Center(child: Image(fit: BoxFit.cover, image: AssetImage('assets/images/77.webp'))),
+              Center(child: Image(fit: BoxFit.cover, image: AssetImage('assets/images/80.png'))),
               Column(
                 children: [
                   GestureDetector(
@@ -233,7 +281,7 @@ class _DrawState extends State<DrawDirect4> {
                       //     details.localPosition.dx.toInt() + rng.nextInt(100),
                       //     details.localPosition.dy.toInt() + rng.nextInt(100));
                       // plotCircle(details.localPosition.dx.toInt(), details.localPosition.dy.toInt(), 20);
-                      plotCircleAA(details.localPosition.dx.toInt(), details.localPosition.dy.toInt(), 20);
+                      // plotCircleAA(details.localPosition.dx.toInt(), details.localPosition.dy.toInt(), 20);
                       // setState(() =>
                       //     pixels[(details.localPosition.dy.toInt()) * widget.width + details.localPosition.dx.toInt()] =
                       //         color);
@@ -243,26 +291,28 @@ class _DrawState extends State<DrawDirect4> {
                         lastPoint = null;
                       });
                     },
-                    // onPanUpdate: (details) {
-                    //   if (details.localPosition.dx.toInt() > 0 &&
-                    //       details.localPosition.dy.toInt() > 0 &&
-                    //       details.localPosition.dy.toInt() * widget.width + details.localPosition.dx.toInt() <=
-                    //           widget.maxPixels) {
-                    //     if (lastPoint != null) {
-                    //       plotLineWidth3(lastPoint.x, lastPoint.y, details.localPosition.dx.toInt(),
-                    //           details.localPosition.dy.toInt(), 0, widget.width, pixels);
-                    //
-                    //       setState(() {
-                    //         lastPoint = Point(details.localPosition.dx.toInt(), details.localPosition.dy.toInt());
-                    //       });
-                    //       return;
-                    //     }
-                    //
-                    //     setState(() {
-                    //       lastPoint = Point(details.localPosition.dx.toInt(), details.localPosition.dy.toInt());
-                    //     });
-                    //   }
-                    // },
+                    onPanUpdate: (details) {
+                      if (details.localPosition.dx.toInt() > 0 &&
+                          details.localPosition.dy.toInt() > 0 &&
+                          details.localPosition.dy.toInt() * widget.width + details.localPosition.dx.toInt() <=
+                              widget.maxPixels) {
+                        if (lastPoint != null) {
+                          // plotLineAA(lastPoint.x, lastPoint.y, details.localPosition.dx.toInt(),
+                          //     details.localPosition.dy.toInt());
+                          plotLineWidth(lastPoint.x, lastPoint.y, details.localPosition.dx.toInt(),
+                              details.localPosition.dy.toInt(), 2);
+
+                          setState(() {
+                            lastPoint = Point(details.localPosition.dx.toInt(), details.localPosition.dy.toInt());
+                          });
+                          return;
+                        }
+
+                        setState(() {
+                          lastPoint = Point(details.localPosition.dx.toInt(), details.localPosition.dy.toInt());
+                        });
+                      }
+                    },
                     child: FutureBuilder<ui.Image>(
                       future: makeImage(),
                       builder: (context, snapshot) {
@@ -301,26 +351,26 @@ class _DrawState extends State<DrawDirect4> {
                             });
                           },
                           child: Text('Clear')),
-                      FlatButton(
-                          onPressed: () => setState(() {
-                                color = Color.fromRGBO(0, 0, 0, 0.7).value;
-                              }),
-                          child: Text('Black')),
-                      FlatButton(
-                          onPressed: () => setState(() {
-                                color = Color.fromRGBO(0, 0, 255, 0.7).value;
-                              }),
-                          child: Text('Red')),
-                      FlatButton(
-                          onPressed: () => setState(() {
-                                color = Color.fromRGBO(0, 255, 0, 0.7).value;
-                              }),
-                          child: Text('Green')),
-                      FlatButton(
-                          onPressed: () => setState(() {
-                                color = Color.fromRGBO(255, 0, 0, 0.7).value;
-                              }),
-                          child: Text('Blue'))
+                      // FlatButton(
+                      //     onPressed: () => setState(() {
+                      //           color = Color.fromRGBO(0, 0, 0, 0.7).value;
+                      //         }),
+                      //     child: Text('Black')),
+                      // FlatButton(
+                      //     onPressed: () => setState(() {
+                      //           color = Color.fromRGBO(0, 0, 255, 0.7).value;
+                      //         }),
+                      //     child: Text('Red')),
+                      // FlatButton(
+                      //     onPressed: () => setState(() {
+                      //           color = Color.fromRGBO(0, 255, 0, 0.7).value;
+                      //         }),
+                      //     child: Text('Green')),
+                      // FlatButton(
+                      //     onPressed: () => setState(() {
+                      //           color = Color.fromRGBO(255, 0, 0, 0.7).value;
+                      //         }),
+                      //     child: Text('Blue'))
                     ],
                   ),
                 ],

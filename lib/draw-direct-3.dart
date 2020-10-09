@@ -115,7 +115,7 @@ class _DrawState extends State<DrawDirect3> {
           color: Colors.white,
           child: Stack(
             children: [
-              Center(child: Image(fit: BoxFit.cover, image: AssetImage('assets/images/77.webp'))),
+              // Center(child: Image(fit: BoxFit.cover, image: AssetImage('assets/images/77.webp'))),
               Column(
                 children: [
                   GestureDetector(
@@ -136,7 +136,7 @@ class _DrawState extends State<DrawDirect3> {
                               widget.maxPixels) {
                         if (lastPoint != null) {
                           plotLineWidth3(lastPoint.x, lastPoint.y, details.localPosition.dx.toInt(),
-                              details.localPosition.dy.toInt(), 1, widget.width, pixels);
+                              details.localPosition.dy.toInt(), 4, widget.width, pixels);
 
                           setState(() {
                             lastPoint = Point(details.localPosition.dx.toInt(), details.localPosition.dy.toInt());
