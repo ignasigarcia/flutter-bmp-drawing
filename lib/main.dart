@@ -1,6 +1,7 @@
-import 'package:bmp/draw-direct-4.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'draw-direct-7.dart';
 
 void main() => runApp(MyApp());
 
@@ -23,12 +24,24 @@ class MyApp extends StatelessWidget {
 class ScreenInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // int width = (MediaQuery.of(context).size.width * 2).toInt();
-    // int height = (MediaQuery.of(context).size.height * 2).toInt() - 400;
     int width = (MediaQuery.of(context).size.width).toInt();
     int height = (MediaQuery.of(context).size.height).toInt() - 100;
 
-    return DrawDirect4(
+    // int realWidth = (MediaQuery.of(context).size.width * MediaQuery.of(context).devicePixelRatio).toInt();
+    // print(realWidth);
+    // int realHeight = (MediaQuery.of(context).size.height * MediaQuery.of(context).devicePixelRatio).toInt();
+    // print(realHeight);
+
+    // return DrawDirect72(
+    //   // width: realWidth,
+    //   width: width * 2,
+    //   // height: realHeight - 1300,
+    //   height: height * 2 - 1090,
+    //   // maxPixels: realWidth * realHeight,
+    //   maxPixels: width * height,
+    // );
+
+    return DrawDirect7(
       width: width,
       height: height,
       maxPixels: width * height,

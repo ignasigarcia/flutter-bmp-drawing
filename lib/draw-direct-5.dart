@@ -1,5 +1,6 @@
 // TODO
-// Tune current plotLineWidth
+// Tune current plotLineWidth, use Xiao Wu's or paint antialiased image on CustomPaint
+// Save image
 // Pass parameters for color and thickness
 // Do not write on top of a solid color
 // Zoom
@@ -12,18 +13,18 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-class DrawDirect4 extends StatefulWidget {
+class DrawDirect5 extends StatefulWidget {
   final int width;
   final int height;
   final int maxPixels;
 
-  const DrawDirect4({Key key, this.width, this.height, this.maxPixels}) : super(key: key);
+  const DrawDirect5({Key key, this.width, this.height, this.maxPixels}) : super(key: key);
 
   @override
   _DrawState createState() => _DrawState();
 }
 
-class _DrawState extends State<DrawDirect4> {
+class _DrawState extends State<DrawDirect5> {
   Int32List pixels;
   Int32List shades;
   Point lastPoint;
@@ -148,7 +149,8 @@ class _DrawState extends State<DrawDirect4> {
 
     for (;;) {
       /* pixel loop */
-      setPixelAA(x0, y0, 255 * (err - dx + dy).abs() / ed);
+      // setPixelAA(x0, y0, 255 * (err - dx + dy).abs() / ed);
+      setPixel(x0, y0);
       e2 = err;
       x2 = x0;
       if (2 * e2 >= -dx) {
@@ -161,7 +163,10 @@ class _DrawState extends State<DrawDirect4> {
       if (2 * e2 <= dy) {
         /* y step */
         if (y0 == y1) break;
-        if (dx - e2 < ed) setPixelAA(x2 + sx, y0, 255 * (dx - e2) / ed);
+        if (dx - e2 < ed) {
+          // setPixelAA(x2 + sx, y0, 255 * (dx - e2) / ed);
+          setPixel(x2 + sx, y0);
+        }
         err += dx;
         y0 += sy;
       }
@@ -235,8 +240,10 @@ class _DrawState extends State<DrawDirect4> {
       err = x1 * dy - th / 1.5; /* shift error value to offset width */
       for (x0 -= x1 * sx;; y0 += sy) {
         setPixelAA(x1 = x0, y0, err); /* aliasing pre-pixel */
+        // setPixel(x1 = x0, y0);
         for (e2 = dy - err - th; e2 + dy < 255; e2 += dy) setPixel(x1 += sx, y0); /* pixel on the line */
         setPixelAA(x1 + sx, y0, e2); /* aliasing post-pixel */
+        // setPixel(x1 + sx, y0);
         if (y0 == y1) break;
         err += dx; /* y-step */
         if (err > 255) {
@@ -250,8 +257,10 @@ class _DrawState extends State<DrawDirect4> {
       err = y1 * dx - th / 1.5; /* shift error value to offset width */
       for (y0 -= y1 * sy;; x0 += sx) {
         setPixelAA(x0, y1 = y0, err); /* aliasing pre-pixel */
+        // setPixel(x0, y1 = y0);
         for (e2 = dx - err - th; e2 + dx < 255; e2 += dx) setPixel(x0, y1 += sy); /* pixel on the line */
         setPixelAA(x0, y1 + sy, e2); /* aliasing post-pixel */
+        // setPixel(x0, y1 + sy);
         if (x0 == x1) break;
         err += dy; /* x-step */
         if (err > 255) {
@@ -326,24 +335,28 @@ class _DrawState extends State<DrawDirect4> {
                     child: FutureBuilder<ui.Image>(
                       future: makeImage(),
                       builder: (context, snapshot) {
-                        return Stack(
-                          children: [
-                            RawImage(
-                              image: snapshot.data,
-                              fit: BoxFit.contain,
-                            ),
-                            Container(
-                              width: 900,
-                              height: 1000,
-                              child: new BackdropFilter(
-                                filter: new ImageFilter.blur(sigmaX: 0.2, sigmaY: 0.2),
-                                child: new Container(
-                                  decoration: new BoxDecoration(color: Colors.white.withOpacity(0.0)),
-                                ),
-                              ),
-                            )
-                          ],
-                        );
+                        var tas = 1;
+                        return CustomPaint(
+                            size: Size(widget.width.toDouble(), widget.height.toDouble()),
+                            painter: ImagePresenter(image: snapshot.data));
+                        // return Stack(
+                        //   children: [
+                        //     RawImage(
+                        //       image: snapshot.data,
+                        //       fit: BoxFit.contain,
+                        //     ),
+                        //     // Container(
+                        //     //   width: 900,
+                        //     //   height: 1000,
+                        //     //   child: new BackdropFilter(
+                        //     //     filter: new ImageFilter.blur(sigmaX: 0.2, sigmaY: 0.2),
+                        //     //     child: new Container(
+                        //     //       decoration: new BoxDecoration(color: Colors.white.withOpacity(0.0)),
+                        //     //     ),
+                        //     //   ),
+                        //     // )
+                        //   ],
+                        // );
                       },
                     ),
                   ),
@@ -390,5 +403,27 @@ class _DrawState extends State<DrawDirect4> {
         ),
       ),
     );
+  }
+}
+
+class ImagePresenter extends CustomPainter {
+  ImagePresenter({this.image});
+
+  ui.Image image;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // ByteData data = await image.toByteData();
+    canvas.drawImage(
+        image,
+        new Offset(0.0, 0.0),
+        new Paint()
+          ..isAntiAlias = true
+          ..filterQuality = FilterQuality.high);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
   }
 }
