@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'draw-direct-7.dart';
+import 'draw-direct-6.dart';
 
 void main() => runApp(MyApp());
 
@@ -41,7 +41,7 @@ class ScreenInfo extends StatelessWidget {
     //   maxPixels: width * height,
     // );
 
-    return DrawDirect7(
+    return DrawDirect6(
       width: width,
       height: height,
       maxPixels: width * height,

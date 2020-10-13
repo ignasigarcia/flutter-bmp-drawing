@@ -277,7 +277,7 @@ class _DrawState extends State<DrawDirect5> {
 
   @override
   Widget build(BuildContext context) {
-    var rng = new Random();
+    // var rng = new Random();
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -335,7 +335,6 @@ class _DrawState extends State<DrawDirect5> {
                     child: FutureBuilder<ui.Image>(
                       future: makeImage(),
                       builder: (context, snapshot) {
-                        var tas = 1;
                         return CustomPaint(
                             size: Size(widget.width.toDouble(), widget.height.toDouble()),
                             painter: ImagePresenter(image: snapshot.data));

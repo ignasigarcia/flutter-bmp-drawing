@@ -268,7 +268,7 @@ class _DrawState extends State<DrawDirect4> {
 
   @override
   Widget build(BuildContext context) {
-    var rng = new Random();
+    // var rng = new Random();
     return Scaffold(
       body: SafeArea(
         child: Container(
