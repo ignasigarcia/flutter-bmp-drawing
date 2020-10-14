@@ -16,18 +16,18 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-class DrawDirect6 extends StatefulWidget {
+class DrawDirect10Circle extends StatefulWidget {
   final int width;
   final int height;
   final int maxPixels;
 
-  const DrawDirect6({Key key, this.width, this.height, this.maxPixels}) : super(key: key);
+  const DrawDirect10Circle({Key key, this.width, this.height, this.maxPixels}) : super(key: key);
 
   @override
   _DrawState createState() => _DrawState();
 }
 
-class _DrawState extends State<DrawDirect6> {
+class _DrawState extends State<DrawDirect10Circle> {
   Int32List pixels;
   Point lastPoint;
   int color;

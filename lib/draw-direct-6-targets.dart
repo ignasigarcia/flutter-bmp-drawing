@@ -16,18 +16,18 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-class DrawDirect6 extends StatefulWidget {
+class DrawDirect6Targets extends StatefulWidget {
   final int width;
   final int height;
   final int maxPixels;
 
-  const DrawDirect6({Key key, this.width, this.height, this.maxPixels}) : super(key: key);
+  const DrawDirect6Targets({Key key, this.width, this.height, this.maxPixels}) : super(key: key);
 
   @override
   _DrawState createState() => _DrawState();
 }
 
-class _DrawState extends State<DrawDirect6> {
+class _DrawState extends State<DrawDirect6Targets> {
   Int32List pixels;
   Point lastPoint;
   int color;
@@ -43,12 +43,8 @@ class _DrawState extends State<DrawDirect6> {
     final c = Completer<ui.Image>();
 
     ui.decodeImageFromPixels(
-      pixels.buffer.asUint8List(),
-      widget.width,
-      widget.height,
-      ui.PixelFormat.rgba8888,
-      c.complete,
-    );
+        pixels.buffer.asUint8List(), widget.width, widget.height, ui.PixelFormat.rgba8888, c.complete,
+        targetWidth: widget.width, targetHeight: widget.height, allowUpscaling: true);
 
     return c.future;
   }
@@ -147,6 +143,10 @@ class _DrawState extends State<DrawDirect6> {
         y0 += sy;
       }
     }
+
+    setState(() {
+      pixels = pixels;
+    });
   }
 
   plotLineWidth(x0, y0, x1, y1, th) {
@@ -220,7 +220,9 @@ class _DrawState extends State<DrawDirect6> {
                 children: [
                   GestureDetector(
                     onPanStart: (details) {
-                      // TODO plot circle
+                      // int x = details.localPosition.dx.toInt();
+                      // int y = details.localPosition.dy.toInt();
+                      // plotLine(x, y, 100, 100);
                     },
                     onPanEnd: (details) => setState(() => lastPoint = null),
                     onPanUpdate: (details) {
@@ -228,8 +230,12 @@ class _DrawState extends State<DrawDirect6> {
                       int y = details.localPosition.dy.toInt();
 
                       if (x > 0 && y > 0 && y * widget.width + x <= widget.maxPixels && lastPoint != null) {
-                        plotLineWidth(lastPoint.x, lastPoint.y, x, y, thickness);
+                        // plotLineWidth(lastPoint.x, lastPoint.y, x, y, thickness);
+                        // plotLine(lastPoint.x, lastPoint.y, x, y);
+                        plotLineWidth(lastPoint.x, lastPoint.y, x, y, 4);
+                        // plotLine(lastPoint.x + 1, lastPoint.y + 1, x + 1, y + 1);
                         setState(() => lastPoint = Point(x, y));
+                        // plotLine(x, y, 100, 100);
                         return;
                       }
 
@@ -241,10 +247,11 @@ class _DrawState extends State<DrawDirect6> {
                         if (snapshot.hasData) {
                           return CustomPaint(
                               size: Size(widget.width.toDouble(), widget.height.toDouble()),
-                              painter: ImagePresenter(image: snapshot.data));
+                              painter:
+                                  ImagePresenter(image: snapshot.data, width: widget.width, height: widget.height));
                         }
 
-                        return null;
+                        return Container();
                       },
                     ),
                   ),
@@ -295,20 +302,28 @@ class _DrawState extends State<DrawDirect6> {
 }
 
 class ImagePresenter extends CustomPainter {
-  ImagePresenter({this.image});
+  ImagePresenter({this.width, this.height, this.image});
 
-  ui.Image image;
+  final ui.Image image;
+  final int width;
+  final int height;
 
   @override
   void paint(Canvas canvas, Size size) {
-    // var sigma = 0.0;
     canvas.drawImage(
         image,
         new Offset(0.0, 0.0),
         new Paint()
           ..isAntiAlias = true
           ..filterQuality = FilterQuality.high);
-    // ..imageFilter = ui.ImageFilter.blur(sigmaX: sigma, sigmaY: sigma));
+
+    // paintImage(
+    //     canvas: canvas,
+    //     rect: Rect.fromCenter(center: Offset(0, 0), width: width.toDouble(), height: height.toDouble()),
+    //     image: image,
+    //     scale: 2,
+    //     filterQuality: FilterQuality.high,
+    //     isAntiAlias: true);
   }
 
   @override

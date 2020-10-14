@@ -4,21 +4,17 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
-class Signature extends StatefulWidget {
+class Signature2 extends StatefulWidget {
   final Color color;
   final double strokeWidth;
   final CustomPainter backgroundPainter;
   final Function onSign;
-  final int width;
-  final int height;
 
-  Signature({
+  Signature2({
     this.color = Colors.black,
-    this.strokeWidth = 2.0,
+    this.strokeWidth = 1.0,
     this.backgroundPainter,
     this.onSign,
-    this.width,
-    this.height,
     Key key,
   }) : super(key: key);
 
@@ -30,6 +26,7 @@ class Signature extends StatefulWidget {
 }
 
 class _SignaturePainter extends CustomPainter {
+  Size _lastSize;
   final double strokeWidth;
   final List<Offset> points;
   final Color strokeColor;
@@ -37,7 +34,6 @@ class _SignaturePainter extends CustomPainter {
 
   _SignaturePainter({@required this.points, @required this.strokeColor, @required this.strokeWidth}) {
     _linePaint = Paint()
-      ..isAntiAlias = true
       ..color = strokeColor
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
@@ -45,13 +41,11 @@ class _SignaturePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // _lastSize = size;
-    print('points ${points.length}');
+    _lastSize = size;
     for (int i = 0; i < points.length - 1; i++) {
       if (points[i] != null && points[i + 1] != null) {
         canvas.drawLine(points[i], points[i + 1], _linePaint);
       }
-      ;
     }
   }
 
@@ -59,21 +53,21 @@ class _SignaturePainter extends CustomPainter {
   bool shouldRepaint(_SignaturePainter other) => other.points != points;
 }
 
-class SignatureState extends State<Signature> {
+class SignatureState extends State<Signature2> {
   List<Offset> _points = <Offset>[];
   _SignaturePainter _painter;
   Size _lastSize;
   var rng = new Random();
 
+  SignatureState();
+
   @override
   void initState() {
     super.initState();
-    for (int i = 0; i < 5000; i++) {
-      points.add(Offset(i * rng.nextDouble() + 300, i * rng.nextDouble() + 300));
+    for (int i = 0; i < 200000; i++) {
+      points.add(Offset(i * 0.5, i * 0.5));
     }
   }
-
-  SignatureState();
 
   @override
   Widget build(BuildContext context) {
@@ -81,16 +75,15 @@ class SignatureState extends State<Signature> {
     _painter = _SignaturePainter(points: _points, strokeColor: widget.color, strokeWidth: widget.strokeWidth);
     return ClipRect(
       child: CustomPaint(
-        // painter: widget.backgroundPainter,
+        painter: widget.backgroundPainter,
         foregroundPainter: _painter,
         child: GestureDetector(
-          onVerticalDragStart: _onDragStart,
-          onVerticalDragUpdate: _onDragUpdate,
-          onVerticalDragEnd: _onDragEnd,
-          onPanStart: _onDragStart,
-          onPanUpdate: _onDragUpdate,
-          onPanEnd: _onDragEnd,
-        ),
+            onVerticalDragStart: _onDragStart,
+            onVerticalDragUpdate: _onDragUpdate,
+            onVerticalDragEnd: _onDragEnd,
+            onPanStart: _onDragStart,
+            onPanUpdate: _onDragUpdate,
+            onPanEnd: _onDragEnd),
       ),
     );
   }
@@ -104,18 +97,19 @@ class SignatureState extends State<Signature> {
   }
 
   void _onDragUpdate(DragUpdateDetails details) {
-    // RenderBox referenceBox = context.findRenderObject();
-    // Offset localPosition = referenceBox.globalToLocal(details.globalPosition);
+    RenderBox referenceBox = context.findRenderObject();
+    Offset localPosition = referenceBox.globalToLocal(details.globalPosition);
 
     setState(() {
-      _points = List.from(_points)..add(details.localPosition);
-      // if (widget.onSign != null) {
-      //   widget.onSign();
-      // }
+      _points = List.from(_points)..add(localPosition);
+      if (widget.onSign != null) {
+        widget.onSign();
+      }
     });
   }
 
-  void _onDragEnd(DragEndDetails details) => _points.add(null);
+  // void _onDragEnd(DragEndDetails details) => _points.add(null);
+  void _onDragEnd(DragEndDetails details) {}
 
   Future<ui.Image> getData() {
     var recorder = ui.PictureRecorder();
@@ -140,7 +134,6 @@ class SignatureState extends State<Signature> {
 
   List<Offset> get points => _points;
 
-  // TODO investigate this
   afterFirstLayout(BuildContext context) {
     _lastSize = context.size;
   }

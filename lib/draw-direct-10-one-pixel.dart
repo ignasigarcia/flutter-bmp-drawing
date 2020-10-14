@@ -16,18 +16,20 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-class DrawDirect6 extends StatefulWidget {
+const int black = 4278190080; // Color.fromRGBO(0, 0, 0, 1).value
+
+class DrawDirect10OnePixel extends StatefulWidget {
   final int width;
   final int height;
   final int maxPixels;
 
-  const DrawDirect6({Key key, this.width, this.height, this.maxPixels}) : super(key: key);
+  const DrawDirect10OnePixel({Key key, this.width, this.height, this.maxPixels}) : super(key: key);
 
   @override
   _DrawState createState() => _DrawState();
 }
 
-class _DrawState extends State<DrawDirect6> {
+class _DrawState extends State<DrawDirect10OnePixel> {
   Int32List pixels;
   Point lastPoint;
   int color;
@@ -207,6 +209,48 @@ class _DrawState extends State<DrawDirect6> {
     setState(() => pixels = pixels);
   }
 
+  bresenham(x0, y0, x1, y1, [fn]) {
+    if (fn == null) {
+      fn = (x, y) {
+        pixels[y * widget.width + x] = black;
+        // arr.add(Point(x, y));
+      };
+    }
+    var dx = x1 - x0;
+    var dy = y1 - y0;
+    var adx = dx.abs();
+    var ady = dy.abs();
+    var eps = 0;
+    var sx = dx > 0 ? 1 : -1;
+    var sy = dy > 0 ? 1 : -1;
+
+    if (adx > ady) {
+      for (var x = x0, y = y0; sx < 0 ? x >= x1 : x <= x1; x += sx) {
+        fn(x, y);
+        eps += ady;
+        if ((eps << 1) >= adx) {
+          y += sy;
+          eps -= adx;
+        }
+      }
+    } else {
+      for (var x = x0, y = y0; sy < 0 ? y >= y1 : y <= y1; y += sy) {
+        fn(x, y);
+        eps += adx;
+
+        if ((eps << 1) >= ady) {
+          x += sx;
+          eps -= ady;
+        }
+      }
+    }
+    // return arr;
+
+    setState(() {
+      pixels = pixels;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -228,7 +272,8 @@ class _DrawState extends State<DrawDirect6> {
                       int y = details.localPosition.dy.toInt();
 
                       if (x > 0 && y > 0 && y * widget.width + x <= widget.maxPixels && lastPoint != null) {
-                        plotLineWidth(lastPoint.x, lastPoint.y, x, y, thickness);
+                        // plotLineWidth(lastPoint.x, lastPoint.y, x, y, thickness);
+                        plotLine(lastPoint.x, lastPoint.y, x, y);
                         setState(() => lastPoint = Point(x, y));
                         return;
                       }
@@ -241,7 +286,8 @@ class _DrawState extends State<DrawDirect6> {
                         if (snapshot.hasData) {
                           return CustomPaint(
                               size: Size(widget.width.toDouble(), widget.height.toDouble()),
-                              painter: ImagePresenter(image: snapshot.data));
+                              painter:
+                                  ImagePresenter(image: snapshot.data, width: widget.width, height: widget.height));
                         }
 
                         return null;
@@ -295,20 +341,30 @@ class _DrawState extends State<DrawDirect6> {
 }
 
 class ImagePresenter extends CustomPainter {
-  ImagePresenter({this.image});
+  ImagePresenter({this.width, this.height, this.image});
 
-  ui.Image image;
+  final ui.Image image;
+  final int width;
+  final int height;
 
   @override
   void paint(Canvas canvas, Size size) {
     // var sigma = 0.0;
-    canvas.drawImage(
-        image,
-        new Offset(0.0, 0.0),
-        new Paint()
-          ..isAntiAlias = true
-          ..filterQuality = FilterQuality.high);
+    // canvas.drawImage(
+    //     image,
+    //     new Offset(0.0, 0.0),
+    //     new Paint()
+    //       ..isAntiAlias = false
+    //       ..filterQuality = FilterQuality.none);
     // ..imageFilter = ui.ImageFilter.blur(sigmaX: sigma, sigmaY: sigma));
+
+    paintImage(
+        canvas: canvas,
+        rect: Rect.fromCenter(center: Offset(0, 0), width: 300, height: 300),
+        image: image,
+        scale: 1.5,
+        filterQuality: FilterQuality.high,
+        isAntiAlias: true);
   }
 
   @override

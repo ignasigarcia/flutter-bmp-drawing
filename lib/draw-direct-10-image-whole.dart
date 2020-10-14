@@ -16,31 +16,39 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-class DrawDirect6 extends StatefulWidget {
+class DrawDirect10ImageWhole extends StatefulWidget {
   final int width;
   final int height;
   final int maxPixels;
 
-  const DrawDirect6({Key key, this.width, this.height, this.maxPixels}) : super(key: key);
+  const DrawDirect10ImageWhole({Key key, this.width, this.height, this.maxPixels}) : super(key: key);
 
   @override
   _DrawState createState() => _DrawState();
 }
 
-class _DrawState extends State<DrawDirect6> {
+class _DrawState extends State<DrawDirect10ImageWhole> {
   Int32List pixels;
   Point lastPoint;
   int color;
   double thickness = 2;
+  double widthDouble;
+  double heightDouble;
 
   void initState() {
     super.initState();
     pixels = Int32List(widget.width * widget.height);
     color = Color.fromRGBO(0, 0, 0, 1).value;
+    widthDouble = widget.width.toDouble();
+    heightDouble = widget.height.toDouble();
   }
 
   Future<ui.Image> makeImage() {
     final c = Completer<ui.Image>();
+
+    // for (int i = 0; i < pixels.length; i++) {
+    //   pixels[i] = Color.fromRGBO(0, 255, 0, 1).value;
+    // }
 
     ui.decodeImageFromPixels(
       pixels.buffer.asUint8List(),
@@ -147,6 +155,11 @@ class _DrawState extends State<DrawDirect6> {
         y0 += sy;
       }
     }
+
+    setState(() {
+      pixels = pixels;
+      // lastPoint = Point(x0, y0);
+    });
   }
 
   plotLineWidth(x0, y0, x1, y1, th) {
@@ -210,84 +223,60 @@ class _DrawState extends State<DrawDirect6> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          color: Colors.white,
-          child: Stack(
-            children: [
-              Center(child: Image(fit: BoxFit.cover, image: AssetImage('assets/images/80.png'))),
-              Column(
-                children: [
-                  GestureDetector(
-                    onPanStart: (details) {
-                      // TODO plot circle
-                    },
-                    onPanEnd: (details) => setState(() => lastPoint = null),
-                    onPanUpdate: (details) {
-                      int x = details.localPosition.dx.toInt();
-                      int y = details.localPosition.dy.toInt();
+      body: Container(
+        color: Colors.red,
+        child: Stack(
+          children: [
+            // Center(child: Image(fit: BoxFit.cover, image: AssetImage('assets/images/80.png'))),
+            SizedBox(
+              width: widthDouble,
+              height: heightDouble,
+              child: GestureDetector(
+                // onPanStart: (details) {
+                //   TODO plot circle
+                // },
+                onPanEnd: (details) => setState(() => lastPoint = null),
+                onPanUpdate: (details) {
+                  int x = details.localPosition.dx.toInt();
+                  int y = details.localPosition.dy.toInt();
+                  // int x = details.localPosition.dx.toInt();
+                  // int y = details.localPosition.dy.toInt();
 
-                      if (x > 0 && y > 0 && y * widget.width + x <= widget.maxPixels && lastPoint != null) {
-                        plotLineWidth(lastPoint.x, lastPoint.y, x, y, thickness);
-                        setState(() => lastPoint = Point(x, y));
-                        return;
-                      }
+                  if (x > 0 && y > 0 && y * widget.width + x <= widget.maxPixels && lastPoint != null) {
+                    // plotLineWidth(lastPoint.x, lastPoint.y, x, y, thickness);
+                    print('paint $x $y');
+                    plotLine(lastPoint.x, lastPoint.y, x, y);
+                    setState(() => lastPoint = Point(x, y));
+                    return;
+                  }
 
-                      setState(() => lastPoint = Point(x, y));
-                    },
-                    child: FutureBuilder<ui.Image>(
-                      future: makeImage(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return CustomPaint(
-                              size: Size(widget.width.toDouble(), widget.height.toDouble()),
-                              painter: ImagePresenter(image: snapshot.data));
-                        }
-
-                        return null;
-                      },
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      FlatButton(
-                          onPressed: () {
-                            for (int i = 0; i < pixels.length; i++) {
-                              pixels[i] = Color.fromRGBO(0, 0, 0, 0).value;
-                            }
-
-                            setState(() {
-                              pixels = pixels;
-                              lastPoint = null;
-                            });
-                          },
-                          child: Text('Clear')),
-                      // FlatButton(
-                      //     onPressed: () => setState(() {
-                      //           color = Color.fromRGBO(0, 0, 0, 0.7).value;
-                      //         }),
-                      //     child: Text('Black')),
-                      // FlatButton(
-                      //     onPressed: () => setState(() {
-                      //           color = Color.fromRGBO(0, 0, 255, 0.7).value;
-                      //         }),
-                      //     child: Text('Red')),
-                      // FlatButton(
-                      //     onPressed: () => setState(() {
-                      //           color = Color.fromRGBO(0, 255, 0, 0.7).value;
-                      //         }),
-                      //     child: Text('Green')),
-                      // FlatButton(
-                      //     onPressed: () => setState(() {
-                      //           color = Color.fromRGBO(255, 0, 0, 0.7).value;
-                      //         }),
-                      //     child: Text('Blue'))
-                    ],
-                  ),
-                ],
-              )
-            ],
-          ),
+                  setState(() => lastPoint = Point(x, y));
+                  // setState(() => lastPoint = Point(details.localPosition.dx, details.localPosition.dy));
+                  // setState(() {});
+                },
+                child: FutureBuilder<ui.Image>(
+                  future: makeImage(),
+                  builder: (context, snapshot) {
+                    // if (snapshot.hasData) {
+                    // RawImage(
+                    //   image: snapshot.data,
+                    // );
+                    return CustomPaint(
+                        //     size: Size(100, 100),
+                        size: Size(widthDouble, heightDouble),
+                        painter: ImagePresenter(image: snapshot.data, width: widget.width, height: widget.height));
+                    // }
+                    //
+                    // return Container(
+                    //   color: Colors.blue,
+                    //   width: widthDouble,
+                    //   height: heightDouble,
+                    // );
+                  },
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
@@ -295,20 +284,30 @@ class _DrawState extends State<DrawDirect6> {
 }
 
 class ImagePresenter extends CustomPainter {
-  ImagePresenter({this.image});
+  ImagePresenter({this.width, this.height, this.image});
 
-  ui.Image image;
+  final ui.Image image;
+  final int width;
+  final int height;
 
   @override
   void paint(Canvas canvas, Size size) {
-    // var sigma = 0.0;
+    // // var sigma = 0.0;
     canvas.drawImage(
         image,
         new Offset(0.0, 0.0),
         new Paint()
-          ..isAntiAlias = true
-          ..filterQuality = FilterQuality.high);
-    // ..imageFilter = ui.ImageFilter.blur(sigmaX: sigma, sigmaY: sigma));
+          ..isAntiAlias = false
+          ..filterQuality = FilterQuality.none);
+    // // ..imageFilter = ui.ImageFilter.blur(sigmaX: sigma, sigmaY: sigma));
+
+    // paintImage(
+    //     canvas: canvas,
+    //     rect: Rect.fromCenter(center: Offset(0, 0), width: width.toDouble(), height: height.toDouble()),
+    //     image: image,
+    //     scale: 1,
+    //     filterQuality: FilterQuality.high,
+    //     isAntiAlias: true);
   }
 
   @override

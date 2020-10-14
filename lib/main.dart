@@ -1,7 +1,6 @@
+import 'package:bmp/draw-direct-6-targets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'draw-direct-6.dart';
 
 void main() => runApp(MyApp());
 
@@ -26,11 +25,11 @@ class ScreenInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     int width = (MediaQuery.of(context).size.width).toInt();
     int height = (MediaQuery.of(context).size.height).toInt() - 100;
+    print('logical dimensions $width x $height');
 
-    // int realWidth = (MediaQuery.of(context).size.width * MediaQuery.of(context).devicePixelRatio).toInt();
-    // print(realWidth);
-    // int realHeight = (MediaQuery.of(context).size.height * MediaQuery.of(context).devicePixelRatio).toInt();
-    // print(realHeight);
+    int realWidth = (MediaQuery.of(context).size.width * MediaQuery.of(context).devicePixelRatio).toInt();
+    int realHeight = (MediaQuery.of(context).size.height * MediaQuery.of(context).devicePixelRatio).toInt();
+    print('real dimensions $realWidth x $realHeight');
 
     // return DrawDirect72(
     //   // width: realWidth,
@@ -41,7 +40,17 @@ class ScreenInfo extends StatelessWidget {
     //   maxPixels: width * height,
     // );
 
-    return DrawDirect6(
+    int hdWidth = (MediaQuery.of(context).size.width * 1.5).toInt();
+    int hdHeight = (MediaQuery.of(context).size.height * 1.5).toInt();
+    print('real dimensions $realWidth x $realHeight');
+
+    // return DrawDirect10Circle(
+    //   width: width,
+    //   height: height,
+    //   maxPixels: width * height,
+    // );
+
+    return DrawDirect6Targets(
       width: width,
       height: height,
       maxPixels: width * height,
