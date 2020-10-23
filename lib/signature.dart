@@ -28,7 +28,7 @@ class Signature extends StatefulWidget {
 }
 
 class _SignaturePainter extends CustomPainter {
-  Size _lastSize;
+  // Size _lastSize;
   final double strokeWidth;
   final Float32List points;
   final Color strokeColor;

@@ -26,7 +26,7 @@ class Signature2 extends StatefulWidget {
 }
 
 class _SignaturePainter extends CustomPainter {
-  Size _lastSize;
+  // Size _lastSize;
   final double strokeWidth;
   final List<Offset> points;
   final Color strokeColor;
@@ -41,7 +41,7 @@ class _SignaturePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    _lastSize = size;
+    // _lastSize = size;
     for (int i = 0; i < points.length - 1; i++) {
       if (points[i] != null && points[i + 1] != null) {
         canvas.drawLine(points[i], points[i + 1], _linePaint);

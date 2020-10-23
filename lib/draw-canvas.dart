@@ -51,7 +51,6 @@ class _SignaturePainter extends CustomPainter {
       if (points[i] != null && points[i + 1] != null) {
         canvas.drawLine(points[i], points[i + 1], _linePaint);
       }
-      ;
     }
   }
 

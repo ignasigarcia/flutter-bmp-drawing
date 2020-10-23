@@ -1,4 +1,4 @@
-import 'package:bmp/draw-direct-6-targets.dart';
+import 'package:bmp/draw-circle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -40,9 +40,9 @@ class ScreenInfo extends StatelessWidget {
     //   maxPixels: width * height,
     // );
 
-    int hdWidth = (MediaQuery.of(context).size.width * 1.5).toInt();
-    int hdHeight = (MediaQuery.of(context).size.height * 1.5).toInt();
-    print('real dimensions $realWidth x $realHeight');
+    // int hdWidth = (MediaQuery.of(context).size.width * 1.5).toInt();
+    // int hdHeight = (MediaQuery.of(context).size.height * 1.5).toInt();
+    // print('real dimensions $realWidth x $realHeight');
 
     // return DrawDirect10Circle(
     //   width: width,
@@ -50,10 +50,24 @@ class ScreenInfo extends StatelessWidget {
     //   maxPixels: width * height,
     // );
 
-    return DrawDirect6Targets(
+    // return DemoApp();
+
+    // return DrawDirect6(
+    //   width: width,
+    //   height: height,
+    //   maxPixels: width * height,
+    // );
+
+    return DrawCircle(
       width: width,
       height: height,
       maxPixels: width * height,
+    );
+
+    return DrawCircle(
+      width: realWidth,
+      height: realHeight,
+      maxPixels: realWidth * realHeight,
     );
   }
 }
