@@ -25,6 +25,7 @@ class _DrawState extends State<DrawCircle> {
   double thickness = 2;
   int radius = 1;
   bool isStylus = false;
+  bool isAntialias = false;
 
   void initState() {
     super.initState();
@@ -217,15 +218,18 @@ class _DrawState extends State<DrawCircle> {
                         // future: loadUiImage('assets/images/4k.jpg'),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
-                            // return RawImage(
-                            //   image: snapshot.data,
-                            // );
-                            return CustomPaint(
-                                isComplex: true,
-                                willChange: false,
-                                size: Size(widget.width.toDouble(), widget.height.toDouble()),
-                                painter:
-                                    ImagePresenter(image: snapshot.data, width: widget.width, height: widget.height));
+                            if (isAntialias) {
+                              return CustomPaint(
+                                  isComplex: true,
+                                  willChange: false,
+                                  size: Size(widget.width.toDouble(), widget.height.toDouble()),
+                                  painter:
+                                      ImagePresenter(image: snapshot.data, width: widget.width, height: widget.height));
+                            } else {
+                              return RawImage(
+                                image: snapshot.data,
+                              );
+                            }
                           }
 
                           return Container();
@@ -246,6 +250,9 @@ class _DrawState extends State<DrawCircle> {
                               });
                             },
                             child: Text('Clear')),
+                        FlatButton(
+                            onPressed: () => setState(() => isAntialias = !isAntialias),
+                            child: Text('Antialias ${isAntialias ? 'on' : 'off'}')),
                         FlatButton(onPressed: () => setState(() => radius = 1), child: Text('Size 1')),
                         FlatButton(onPressed: () => setState(() => radius = 2), child: Text('Size 2')),
                         FlatButton(onPressed: () => setState(() => radius = 3), child: Text('Size 3'))
